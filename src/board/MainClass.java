@@ -68,6 +68,12 @@ public class MainClass {
 	
 	// 회원탈퇴 메소드
 	public static void memberDelete() {
+		
+		if (loginId == null) { //참이면 로그인하지 않은 상태
+			System.out.println("로그인한 유저만 회원 탈퇴가 가능합니다. 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동			
+		}
+		
 		System.out.print("탈퇴할 아이디 입력 : ");
 		String userid = sc.nextLine();
 		
@@ -140,11 +146,16 @@ public class MainClass {
 		}
 	}
 	
-	//특정 회원 정보 출력 메소드
+	//로그인한 유저의 회원 정보 출력 메소드(내 회원 정보 보기)
 	public static void memberInfo() {
 		
-		System.out.print("회원 정보를 출력할 아이디 입력 : ");
-		String userid = sc.nextLine();
+		if (loginId == null) { //참이면 로그인하지 않은 상태
+			System.out.println("로그인한 유저만 회원 정보 조회가 가능합니다. 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동
+		}
+		
+//		System.out.print("회원 정보를 출력할 아이디 입력 : ");
+//		String userid = sc.nextLine();
 		
 		String sql = "SELECT * FROM member WHERE userid = ?";
 		
@@ -153,7 +164,7 @@ public class MainClass {
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, userid);
+			pstmt.setString(1, loginId);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -170,7 +181,7 @@ public class MainClass {
 				System.out.println(mid + " / " + mpw + " / " + mname + " / " + mdate);
 				
 			} else {
-				System.out.println(userid + " 회원은 존재하지 않는 회원입니다!");
+				System.out.println("로그인 한 유저 정보가 존재하지 않습니다!");
 			}
 			
 			rs.close(); // rs 닫기
@@ -184,7 +195,19 @@ public class MainClass {
 	
 	// 모든 회원 정보를 조회하는 메소드
 	public static void allMemberInfo() {		
-				
+		//관리자 아이디:admin, 비밀번호:8888 로 지정	
+		
+		
+		if (loginId == null) { //참->로그인 안된 상태
+			System.out.println("로그인한 유저만 사용할 수 있는 메뉴입니다. 로그인해주세요.");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동
+		} 
+		
+		if (!loginId.equals("amdin")) { //참->admin 아이디로 로그인 하지 않음
+			System.out.println("모든 회원 정보는 관리자만 조회가능합니다. 관리자로 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동
+		}			
+		
 		String sql = "SELECT * FROM member";
 		
 		try {
@@ -205,12 +228,10 @@ public class MainClass {
 				System.out.println("아이디 / 비밀번호 / 이름 / 가입일시");
 				System.out.println("---------------------------");
 				System.out.println(mid + " / " + mpw + " / " + mname + " / " + mdate);
-				System.out.println("---------------------------");
-				
-				rs.close(); // rs 닫기
-				conn.close(); //connection 닫기
-				
+				System.out.println("---------------------------");				
 			} 
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
 			
 		} catch(Exception e) {
 			System.out.println("회원 정보 조회 실패!");
@@ -253,6 +274,7 @@ public class MainClass {
 				
 			} else {
 				System.out.println("아이디 또는 비밀번호가 잘못 입력되었습니다. 다시 확인해주세요.");
+				login();
 			}
 			
 			rs.close(); // rs 닫기
@@ -265,14 +287,19 @@ public class MainClass {
 		
 	}
 	
+	//로그아웃 메소드
+	public static void logout() {
+		loginId = null; //로그 아웃
+	}
+	
 	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
 //		memberDelete(); //회원탈퇴 메소드 호출
-		memberUpdate(); //회원수정 메소드 호출
-//		memberInfo(); //회원정보 조회 메소드 호출
-//		allMemberInfo(); //모든 회원정보 보회 메소드 호출
+//		memberUpdate(); //회원수정 메소드 호출
+//		memberInfo(); //로그인한 유저의 내 정보 조회 메소드 호출
+		allMemberInfo(); //모든 회원정보 보회 메소드 호출(관리자만 호출 가능)
 //		login(); //로그인 메소드 호출
 
 	}
