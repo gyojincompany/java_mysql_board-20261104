@@ -57,9 +57,39 @@ public class MainClass {
 		
 	}
 	
+	// 회원탈퇴 메소드
+	public static void memberDelete() {
+		System.out.print("탈퇴할 아이디 입력 : ");
+		String userid = sc.nextLine();
+		
+		String sql = "DELETE FROM member WHERE userid = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			
+			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
+			
+			if (result == 1) {
+				System.out.println("회원 탈퇴 성공!");
+			} else {
+				System.out.println("회원 탈퇴 실패!");
+			}
+			
+		} catch(Exception e) {
+			System.out.println("회원 탈퇴 실패!");
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public static void main(String[] args) {
 		
-		join(); //회원가입 메소드 호출
+//		join(); //회원가입 메소드 호출
+		memberDelete(); //회원탈퇴 메소드 호출
 
 	}
 
