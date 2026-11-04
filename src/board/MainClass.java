@@ -2,6 +2,7 @@ package board;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
 import dbconnection.DBConnection;
@@ -121,12 +122,55 @@ public class MainClass {
 		}
 	}
 	
+	//회원 정보 출력 메소드
+	public static void memberInfo() {
+		
+		System.out.print("회원 정보를 출력할 아이디 입력 : ");
+		String userid = sc.nextLine();
+		
+		String sql = "SELECT * FROM member WHERE userid = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			if (rs.next()) {
+//				System.out.println(userid + " 회원은 존재하는 회원입니다!");
+				String mid = rs.getString("userid"); //회원 아이디
+				String mpw = rs.getString("password"); //회원 비밀번호
+				String mname = rs.getString("username"); //회원 이름
+				String mdate = rs.getString("regdate"); //회원 가입일시
+				
+				System.out.println("아이디 / 비밀번호 / 이름 / 가입일시");
+				System.out.println("---------------------------");
+				System.out.println(mid + " / " + mpw + " / " + mname + " / " + mdate);
+				
+			} else {
+				System.out.println(userid + " 회원은 존재하지 않는 회원입니다!");
+			}
+			
+			
+			
+			
+		} catch(Exception e) {
+			System.out.println("회원 정보 조회 실패!");
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
 //		memberDelete(); //회원탈퇴 메소드 호출
-		memberUpdate();
+//		memberUpdate(); //회원수정 메소드 호출
+		memberInfo(); //회원정보 조회 메소드 호출
 
 	}
 
