@@ -11,6 +11,9 @@ public class MainClass {
 	
 	static Scanner sc = new Scanner(System.in);
 	
+	//전역변수로 로그인한 유저의 아이디를 저장
+	static String loginId = null;
+	
 	// 회원가입 메소드
 	public static void join() {
 		
@@ -95,8 +98,14 @@ public class MainClass {
 	
 	// 회원정보 수정 메소드
 	public static void memberUpdate() {
-		System.out.print("회원 정보를 변경할 아이디 입력 : ");
-		String userid = sc.nextLine();
+		
+//		System.out.print("회원 정보를 변경할 아이디 입력 : ");
+//		String userid = sc.nextLine();
+		
+		if (loginId == null) { //참이면 로그인하지 않은 상태
+			System.out.println("로그인한 유저만 정보 수정이 가능합니다. 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동
+		}
 		
 		System.out.print("변경할 비밀번호 입력 : ");
 		String password = sc.nextLine();
@@ -113,7 +122,7 @@ public class MainClass {
 			
 			pstmt.setString(1, password);
 			pstmt.setString(2, username);
-			pstmt.setString(3, userid);
+			pstmt.setString(3, loginId);
 			
 			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
 			
@@ -209,13 +218,62 @@ public class MainClass {
 		}
 	}
 	
+	// 로그인 메소드
+	public static void login() {
+		
+		System.out.print("로그인 아이디 입력 : ");
+		String userid = sc.nextLine();
+		
+		System.out.print("로그인 비밀번호 입력 : ");
+		String password = sc.nextLine();
+		
+		String sql = "SELECT * FROM member WHERE userid = ? AND password = ?";
+		
+		try {	
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, password);
+			
+			ResultSet rs = pstmt.executeQuery(); //레코드가 1개 오거나 아니면 0개 오거나
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			if (rs.next()) { // 참이면 로그인 성공
+				
+				System.out.println("로그인 성공!");				
+				
+				String mid = rs.getString("userid"); //회원 아이디				
+				String mname = rs.getString("username"); //회원 이름
+				
+				loginId = mid; //로그인아이디에 로그인 성공한 유저의 아이디를 저장
+				
+				System.out.println(mname + "님 환영합니다."); //이름으로 환영인사 출력				
+				
+			} else {
+				System.out.println("아이디 또는 비밀번호가 잘못 입력되었습니다. 다시 확인해주세요.");
+			}
+			
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
+		} catch(Exception e) {
+			System.out.println("회원 정보 조회 실패!");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
 //		memberDelete(); //회원탈퇴 메소드 호출
-//		memberUpdate(); //회원수정 메소드 호출
+		memberUpdate(); //회원수정 메소드 호출
 //		memberInfo(); //회원정보 조회 메소드 호출
-		allMemberInfo(); //모든 회원정보 보회 메소드 호출 
+//		allMemberInfo(); //모든 회원정보 보회 메소드 호출
+//		login(); //로그인 메소드 호출
 
 	}
 
