@@ -16,12 +16,15 @@ public class MainClass {
 		
 		System.out.print("아이디 입력 : ");
 		String userid = sc.nextLine();
+		userid = userid.trim(); // 양쪽 공백 삭제
 		
 		System.out.print("비밀번호 입력 : ");
 		String password = sc.nextLine();
+		password = password.trim();
 		
 		System.out.print("이름 입력 : ");
 		String username = sc.nextLine();
+		username = username.trim();
 		
 		// SQL문 작성
 //		String sql = "INSERT INTO member(userid, password, username) VALUES ('"+userid+"','"+password+"','"+username+")";
