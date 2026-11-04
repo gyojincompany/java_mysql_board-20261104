@@ -21,7 +21,7 @@ public class DBConnection {
 				//DB 연결
 				conn = DriverManager.getConnection(url,user,pass);
 				
-				System.out.println("MySQL 연결 성공!");
+//				System.out.println("MySQL 연결 성공!");
 				
 				
 			} catch (Exception e) {

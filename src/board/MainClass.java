@@ -289,7 +289,12 @@ public class MainClass {
 	
 	//로그아웃 메소드
 	public static void logout() {
-		loginId = null; //로그 아웃
+		if (loginId != null) { //참->로그인한 상태
+			loginId = null; //로그 아웃
+			System.out.println("로그아웃 되셨습니다.");
+		} else { //로그인하지 않은 상태
+			System.out.println("로그인한 상태가 아닙니다.");
+		}		
 	}
 	
 	//게시판 글쓰기
@@ -392,15 +397,26 @@ public class MainClass {
 		System.out.print("삭제할 게시글 번호 입력 : ");
 		String bno = sc.nextLine();
 		
-		String sql = "delete from board where bno = ? and writer = ?";
+		String sql = null;
+		
+		if (loginId.equals("admin")) {
+			sql = "delete from board where bno = ?"; //관리자용->관리자는 모든 글 삭제 가능
+		} else {
+			sql = "delete from board where bno = ? and writer = ?"; //일반 회원용->본인글만 삭제가능
+		}
+		
 		
 		try {
 			
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, bno);
-			pstmt.setString(2, loginId);
+			if (loginId.equals("admin")) {
+				pstmt.setString(1, bno);
+			} else {
+				pstmt.setString(1, bno);
+				pstmt.setString(2, loginId);
+			}
 			
 			
 			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
@@ -419,6 +435,54 @@ public class MainClass {
 		}
 	}
 	
+	//게시글 상세 보기 메소드
+	public static void contentView() {
+		
+		System.out.print("게시글 내용 조회 번호 : ");
+		int bno = Integer.parseInt(sc.nextLine()); //bno가 문자열이므로 정수로 변환
+		
+		String sql = "SELECT * FROM board WHERE bno = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, bno);
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			if (rs.next()) {
+//					
+				int bnum = rs.getInt("bno"); //게시글 번호
+				String btitle = rs.getString("title"); //게시글 제목
+				String bcontent = rs.getString("content"); //게시글 내용
+				String bwriter = rs.getString("writer"); //게시글 작성자 아이디
+				String bdate = rs.getString("regdate"); //게시글 작성일시
+				
+				System.out.println("");
+				System.out.println("------------게시글 내용 보기------------");
+				System.out.println("번호 : " + bnum);
+				System.out.println("제목 : " + btitle);
+				System.out.println("작성자 : " + bwriter);
+				System.out.println("내용 : " + bcontent);
+				System.out.println("작성일시 : " + bdate);
+				System.out.println("-------------------------------------");
+				
+			} else {
+				System.out.println("해당 번호의 글은 존재하지 않습니다!");
+			}
+			
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
+		} catch(Exception e) {
+			System.out.println("게시글 상세보기 실패!");
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
@@ -429,10 +493,52 @@ public class MainClass {
 //		login(); //로그인 메소드 호출
 //		boardWrite(); //게시판 글쓰기 메소드 호출
 //		boardList(); //게시판 목록 메소드 호출
-//		boardDelete();
+//		boardDelete(); //게시판 글 삭제 메소드 호출
 		
-		
-		
+		while (true) {
+			System.out.println(""); //빈줄 삽입 -> 줄 바꿈
+			System.out.println("============== JAVA+MySQL 게시판 ==============");
+			System.out.println("1. 회원가입");
+			System.out.println("2. 로그인");
+			System.out.println("3. 회원정보수정");
+			System.out.println("4. 회원탈퇴");
+			System.out.println("5. 모든 회원정보 보기");
+			System.out.println("6. 게시판 목록");
+			System.out.println("7. 게시글 내용 보기");
+			System.out.println("8. 게시글 삭제");
+			System.out.println("9. 로그아웃");
+			System.out.println("0. 프로그램 종료");
+			System.out.println("==============================================");
+			
+			System.out.print("메뉴 선택 : ");
+			String menu = sc.nextLine();
+			
+			if (menu.equals("1")) {
+				join(); //회원가입 메소드 호출
+			} else if (menu.equals("2")) {
+				login(); //로그인 메소드 호출
+			} else if (menu.equals("3")) {
+				memberUpdate(); //회원수정 메소드 호출
+			} else if (menu.equals("4")) {
+				memberDelete(); //회원탈퇴 메소드 호출
+			} else if (menu.equals("5")) {
+				allMemberInfo(); //모든 회원 정보 보기 메소드 호출
+			} else if (menu.equals("6")) {
+				boardList(); //게시판 목록 메소드 호출
+			} else if (menu.equals("7")) {
+				contentView(); //게시판 글 내용 보기 메소드 호출
+			} else if (menu.equals("8")) {
+				boardDelete(); //게시판 글 삭제 메소드 호출
+			} else if (menu.equals("9")) {
+				logout(); //로그아웃 메소드 호출
+			} else if (menu.equals("0")) {
+				System.out.println("프로그램을 종료합니다.");
+				return; //while문 종료 -> 프로그램 종료
+			} else {
+				System.out.println("잘못된 메뉴번호입니다.");
+			}
+			
+		}
 
 	}
 
