@@ -374,6 +374,51 @@ public class MainClass {
 		}		
 	}
 	
+	
+	// 게시글 삭제 메소드
+	// 삭제할 게시글의 번호 입력 : 3 -> delete from board where bno = ? and writer = ?;
+	// 게시글 삭제 성공!
+	// <조건>
+	// 1. 로그인한 유저만 삭제 가능하도록 구현
+	// 2. 로그인한 유저 본인이 작성한 글만 삭제하도록 구현
+	// 글삭제 실패 시 -> "게시글이 없는 번호 이거나 본인이 작성한 글만 삭제 가능합니다!"
+	public static void boardDelete() {
+		
+		if (loginId == null) { //참이면 로그인하지 않은 상태
+			System.out.println("로그인한 유저만 글삭제가 가능하며 본인이 작성한 글만 삭제가능합니다. 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동			
+		}
+		
+		System.out.print("삭제할 게시글 번호 입력 : ");
+		String bno = sc.nextLine();
+		
+		String sql = "delete from board where bno = ? and writer = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, bno);
+			pstmt.setString(2, loginId);
+			
+			
+			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
+			
+			if (result == 1) {
+				System.out.println("글 삭제 성공!");
+			} else {
+				System.out.println("게시글이 없는 번호 이거나 본인이 작성한 글만 삭제 가능합니다!");
+			}
+			
+			conn.close();
+			
+		} catch(Exception e) {
+			System.out.println("글 삭제 실패!");
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
@@ -383,7 +428,11 @@ public class MainClass {
 //		allMemberInfo(); //모든 회원정보 보회 메소드 호출(관리자만 호출 가능)
 //		login(); //로그인 메소드 호출
 //		boardWrite(); //게시판 글쓰기 메소드 호출
-		boardList(); //게시판 목록 메소드 호출
+//		boardList(); //게시판 목록 메소드 호출
+//		boardDelete();
+		
+		
+		
 
 	}
 
