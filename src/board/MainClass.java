@@ -54,6 +54,8 @@ public class MainClass {
 				System.out.println("회원 가입 실패!");
 			}
 			
+			conn.close();
+			
 		} catch(Exception e) {
 			System.out.println("회원 가입 실패!");
 			e.printStackTrace(); //에러 원인 출력
@@ -82,6 +84,8 @@ public class MainClass {
 			} else {
 				System.out.println("회원 탈퇴 실패!");
 			}
+			
+			conn.close();
 			
 		} catch(Exception e) {
 			System.out.println("회원 탈퇴 실패!");
@@ -118,6 +122,8 @@ public class MainClass {
 			} else {
 				System.out.println("회원 정보 수정 실패!");
 			}
+			
+			conn.close();
 			
 		} catch(Exception e) {
 			System.out.println("회원 정보 수정 실패!");
@@ -158,6 +164,9 @@ public class MainClass {
 				System.out.println(userid + " 회원은 존재하지 않는 회원입니다!");
 			}
 			
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
 		} catch(Exception e) {
 			System.out.println("회원 정보 조회 실패!");
 			e.printStackTrace();
@@ -188,6 +197,9 @@ public class MainClass {
 				System.out.println("---------------------------");
 				System.out.println(mid + " / " + mpw + " / " + mname + " / " + mdate);
 				System.out.println("---------------------------");
+				
+				rs.close(); // rs 닫기
+				conn.close(); //connection 닫기
 				
 			} 
 			
