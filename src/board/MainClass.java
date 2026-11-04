@@ -85,11 +85,48 @@ public class MainClass {
 		}
 	}
 	
+	// 회원정보 수정 메소드
+	public static void memberUpdate() {
+		System.out.print("회원 정보를 변경할 아이디 입력 : ");
+		String userid = sc.nextLine();
+		
+		System.out.print("변경할 비밀번호 입력 : ");
+		String password = sc.nextLine();
+		
+		System.out.print("변경할 이름 입력 : ");
+		String username = sc.nextLine();
+		
+		String sql = "UPDATE member SET password = ?, username = ? WHERE userid = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);			
+			
+			pstmt.setString(1, password);
+			pstmt.setString(2, username);
+			pstmt.setString(3, userid);
+			
+			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
+			
+			if (result == 1) {
+				System.out.println("회원 정보 수정 성공!");
+			} else {
+				System.out.println("회원 정보 수정 실패!");
+			}
+			
+		} catch(Exception e) {
+			System.out.println("회원 정보 수정 실패!");
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
-		memberDelete(); //회원탈퇴 메소드 호출
+//		memberDelete(); //회원탈퇴 메소드 호출
+		memberUpdate();
 
 	}
 
