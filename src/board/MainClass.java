@@ -292,6 +292,87 @@ public class MainClass {
 		loginId = null; //로그 아웃
 	}
 	
+	//게시판 글쓰기
+	public static void boardWrite() {
+		
+		if(loginId == null) {
+			System.out.println("게시판은 로그인한 유저만 작성가능합니다. 로그인 해주세요.");
+			login();
+		}
+		
+		System.out.print("게시글 제목 : ");
+		String title = sc.nextLine();
+		
+		System.out.print("게시글 내용 : ");
+		String content = sc.nextLine();
+		
+		String sql = "INSERT INTO board(title, content, writer) VALUES (?,?,?)";
+		
+		try {
+					
+			Connection conn = DBConnection.getConnection();			
+			PreparedStatement pstmt = conn.prepareStatement(sql);			
+
+			pstmt.setString(1, title);
+			pstmt.setString(2, content);
+			pstmt.setString(3, loginId);			
+
+			int result = pstmt.executeUpdate(); //SQL문 실행 성공하면 정수 1이 반환됨
+			
+			if(result == 1) {
+				System.out.println("글작성 성공!");
+			} else {
+				System.out.println("글작성 실패!");
+			}
+			
+			conn.close();
+			
+		} catch(Exception e) {
+			System.out.println("게시글 작성 실패!");
+			e.printStackTrace(); //에러 원인 출력
+		}
+		
+	}
+	
+	//게시판 목록 조회 메소드
+	public static void boardList() {
+		
+		// 모든 유저가 게시판 목록을 조회할 수 있음(로그인하지 않은 유저도 조회 가능)		
+		
+		String sql = "SELECT * FROM board";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			while (rs.next()) {
+				int bnum = rs.getInt("bno"); //게시판 글번호
+				String btitle = rs.getString("title"); //게시판 글제목
+				String bcontent = rs.getString("content"); //게시판 글내용
+				String bwriter = rs.getString("writer"); //글 작성자 아이디
+				String bdate = rs.getString("regdate"); //게시글 등록일시				
+				
+				System.out.println("------------------------------------------");
+				System.out.println("번호: " + bnum);
+				System.out.println("제목: " + btitle);
+				System.out.println("작성자: " + bwriter);
+				System.out.println("작성일: " + bdate);
+								
+			} 
+			System.out.println("------------------------------------------");
+			
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
+		} catch(Exception e) {
+			System.out.println("게시글 목록 조회 실패!");
+			e.printStackTrace();
+		}		
+	}
 	
 	public static void main(String[] args) {
 		
@@ -299,8 +380,10 @@ public class MainClass {
 //		memberDelete(); //회원탈퇴 메소드 호출
 //		memberUpdate(); //회원수정 메소드 호출
 //		memberInfo(); //로그인한 유저의 내 정보 조회 메소드 호출
-		allMemberInfo(); //모든 회원정보 보회 메소드 호출(관리자만 호출 가능)
+//		allMemberInfo(); //모든 회원정보 보회 메소드 호출(관리자만 호출 가능)
 //		login(); //로그인 메소드 호출
+//		boardWrite(); //게시판 글쓰기 메소드 호출
+		boardList(); //게시판 목록 메소드 호출
 
 	}
 
