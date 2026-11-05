@@ -8,5 +8,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="D:/download/mysql-connector-j-26.10.0/mysql-connector-j-26.10.0/mysql-connector-j-26.10.0.jar"/>
 	<classpathentry kind="lib" path="D:/download/ojdbc17.jar"/>
+	<classpathentry kind="lib" path="D:/download/mariadb-java-client-4.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
