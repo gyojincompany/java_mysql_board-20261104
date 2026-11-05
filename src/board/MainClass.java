@@ -483,6 +483,56 @@ public class MainClass {
 		}
 	}
 	
+	//게시글 수정하기 메소드 
+	public static void boardUpdate() {
+		
+		if (loginId == null) { //참이면 로그인하지 않은 상태
+			System.out.println("로그인한 유저만 게시글 수정이 가능합니다. 로그인해주세요");
+			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동
+		}
+		
+		System.out.print("변경할 글번호 입력 : ");
+		String bno = sc.nextLine();
+		
+		System.out.print("변경할 제목 입력 : ");
+		String title = sc.nextLine();
+		
+		System.out.print("변경할 내용 입력 : ");
+		String content = sc.nextLine();
+		
+		String sql = "UPDATE board SET title = ?, content = ? WHERE bno = ? AND writer = ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);			
+			
+			pstmt.setString(1, title);
+			pstmt.setString(2, content);
+			pstmt.setString(3, bno);
+			pstmt.setString(4, loginId);
+			
+			int result = pstmt.executeUpdate(); //반환값이 1이면 탈퇴 성공
+			
+			if (result == 1) {
+				System.out.println("게시글 수정 성공!");
+			} else {
+				System.out.println("수정하시려는 글이 존재하지 않거나 본인이 작성하지 않은 글은 수정하지 못합니다.");
+			}
+			
+			conn.close();
+			
+		} catch(Exception e) {
+			System.out.println("회원 정보 수정 실패!");
+			e.printStackTrace();
+		}
+	}
+	
+	//전체 게시글 갯수 조회 메소드
+	public static void totalBoardCount() {
+		
+	}
+	
 	public static void main(String[] args) {
 		
 //		join(); //회원가입 메소드 호출
@@ -506,7 +556,9 @@ public class MainClass {
 			System.out.println("6. 게시판 목록");
 			System.out.println("7. 게시글 내용 보기");
 			System.out.println("8. 게시글 삭제");
-			System.out.println("9. 로그아웃");
+			System.out.println("9. 게시글 수정");
+			System.out.println("10. 로그아웃");
+			System.out.println("11. 전체 게시글의 갯수 조회");
 			System.out.println("0. 프로그램 종료");
 			System.out.println("==============================================");
 			
@@ -530,7 +582,11 @@ public class MainClass {
 			} else if (menu.equals("8")) {
 				boardDelete(); //게시판 글 삭제 메소드 호출
 			} else if (menu.equals("9")) {
+				boardUpdate(); //게시글 수정 메소드 호출				
+			} else if (menu.equals("10")) {
 				logout(); //로그아웃 메소드 호출
+			} else if (menu.equals("11")) {
+				totalBoardCount(); //전체 게시글 갯수 출력 메소드 호출
 			} else if (menu.equals("0")) {
 				System.out.println("프로그램을 종료합니다.");
 				return; //while문 종료 -> 프로그램 종료
