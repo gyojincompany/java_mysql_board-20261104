@@ -311,7 +311,7 @@ public class MainClass {
 		System.out.print("게시글 내용 : ");
 		String content = sc.nextLine();
 		
-		String sql = "INSERT INTO board(title, content, writer) VALUES (?,?,?)";
+		String sql = "INSERT INTO board(bno, title, content, writer) VALUES (board_seq.nextval,?,?,?)";
 		
 		try {
 					
