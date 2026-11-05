@@ -345,11 +345,14 @@ public class MainClass {
 		// 모든 유저가 게시판 목록을 조회할 수 있음(로그인하지 않은 유저도 조회 가능)		
 		
 		String sql = "SELECT * FROM board";
+//		String sql = "SELECT * FROM board WHERE writer = ?";
 		
 		try {
 			
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			//pstmt.setString(1, loginId);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -375,6 +378,53 @@ public class MainClass {
 			
 		} catch(Exception e) {
 			System.out.println("게시글 목록 조회 실패!");
+			e.printStackTrace();
+		}		
+	}
+	
+	//게시판 검색 조회 메소드
+	public static void boardSearch() {
+		
+		// 모든 유저가 게시판 검색을 조회할 수 있음(로그인하지 않은 유저도 검색 가능)
+		
+		// 유저가 검색할 키워드(단어)를 입력
+		System.out.print("게시글 검색 키워드 : ");
+		String keyword = sc.nextLine();
+		
+		
+		String sql = "SELECT * FROM board WHERE title LIKE ? OR content LIKE ?";
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, "%"+keyword+"%");
+			pstmt.setString(2, "%"+keyword+"%");
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			while (rs.next()) {
+				int bnum = rs.getInt("bno"); //게시판 글번호
+				String btitle = rs.getString("title"); //게시판 글제목
+				String bcontent = rs.getString("content"); //게시판 글내용
+				String bwriter = rs.getString("writer"); //글 작성자 아이디
+				String bdate = rs.getString("regdate"); //게시글 등록일시				
+				
+				System.out.println("------------------------------------------");
+				System.out.println("번호: " + bnum);
+				System.out.println("제목: " + btitle);
+				System.out.println("작성자: " + bwriter);
+				System.out.println("작성일: " + bdate);								
+			} 
+			System.out.println("------------------------------------------");
+			
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
+		} catch(Exception e) {
+			System.out.println("검색된 게시글 목록 조회 실패!");
 			e.printStackTrace();
 		}		
 	}
@@ -531,7 +581,33 @@ public class MainClass {
 	//전체 게시글 갯수 조회 메소드
 	public static void totalBoardCount() {
 		
+		String sql = "SELECT COUNT(*) as total FROM board"; //게시물의 총 갯수를 반환
+		
+		try {
+			
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			ResultSet rs = pstmt.executeQuery();			
+			
+			// rs 내에 DB로 부터 select문에 의해서 받은 레코드의 존재여부를 확인
+			if (rs.next()) { //DB에서 반환되는 레코드의 수만큼 반복
+				int count = rs.getInt("total");
+				System.out.println("총 게시물의 갯수 : " + count);
+			} else {
+				System.out.println("총 게시물의 갯수 : 0개" );
+			}
+
+			rs.close(); // rs 닫기
+			conn.close(); //connection 닫기
+			
+		} catch(Exception e) {
+			System.out.println("게시글 상세보기 실패!");
+			e.printStackTrace();
+		}
 	}
+	
+	
 	
 	public static void main(String[] args) {
 		
@@ -559,6 +635,8 @@ public class MainClass {
 			System.out.println("9. 게시글 수정");
 			System.out.println("10. 로그아웃");
 			System.out.println("11. 전체 게시글의 갯수 조회");
+			System.out.println("12. 게시글 작성");
+			System.out.println("13. 게시글 검색");
 			System.out.println("0. 프로그램 종료");
 			System.out.println("==============================================");
 			
@@ -587,6 +665,10 @@ public class MainClass {
 				logout(); //로그아웃 메소드 호출
 			} else if (menu.equals("11")) {
 				totalBoardCount(); //전체 게시글 갯수 출력 메소드 호출
+			} else if (menu.equals("12")) {
+				boardWrite(); //게시글 작성 메소드 호출
+			} else if (menu.equals("13")) {
+				boardSearch(); //게시글 검색 메소드 호출
 			} else if (menu.equals("0")) {
 				System.out.println("프로그램을 종료합니다.");
 				return; //while문 종료 -> 프로그램 종료
