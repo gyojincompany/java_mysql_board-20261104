@@ -74,8 +74,15 @@ public class MainClass {
 			login(); //로그인 메소드 호출 -> 로그인 화면으로 이동			
 		}
 		
+		// 본인 아이디만 탈퇴 가능하게 기능 추가		
+		
 		System.out.print("탈퇴할 아이디 입력 : ");
 		String userid = sc.nextLine();
+		
+		if (!userid.equals(loginId)) { //참이면 로그인한 유저와 탈퇴시키려는 아이디가 같지 않은 경우
+			System.out.println("로그인한 유저와 탈퇴시키려는 유저가 일치하지 않습니다!");
+			return;
+		}
 		
 		String sql = "DELETE FROM member WHERE userid = ?";
 		
